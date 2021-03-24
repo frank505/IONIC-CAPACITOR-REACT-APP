@@ -15,3 +15,8 @@
     text-decoration: underline;
     padding:10px;
 }
+.validator-error{
+    color:#f50057;
+    font-weight: bolder;
+    margin-bottom:15px;
+}

@@ -1,0 +1,17 @@
+
+.move-left-a-bit{
+    margin-left: -5% !important;
+    margin-right:2% !important;
+}
+.link-text{
+ align-items: center;
+ align-self: center;
+ text-align: center;
+ justify-content: center;
+ display: flex;
+}
+.custom-style{
+    color:#3880ff;
+    text-decoration: underline;
+    padding:10px;
+}
