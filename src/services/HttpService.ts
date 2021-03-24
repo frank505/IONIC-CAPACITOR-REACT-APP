@@ -10,7 +10,7 @@ const storageType:any = Storage;
 export const getData =  async <T>(addedUrl:string, tokenId :string=''):Promise<T> => 
 {
     const token:any = await storageType.get(tokenId);
-    let requestOptions:any = getRequestOptions(token.value);
+    let requestOptions:any = getRequestOptions(token);
     return fetch(
       baseUrl + '' + addedUrl,
       requestOptions,
@@ -37,8 +37,8 @@ export const getRequestOptions = async <T>(token:any):Promise<T> =>
         const token:any = await storageType.get(tokenId);
 
         const requestOptions:any = postRequestOptions(
-          token.value,
-           item,
+          token,
+          JSON.stringify(item) ,
           postType,
         );
       
@@ -58,6 +58,7 @@ export const getRequestOptions = async <T>(token:any):Promise<T> =>
   headers: {
     Authorization: 'Bearer '+token ,
     'Content-type': 'application/json',
+    'Accept': 'application/json, text/plain, */*',
   },
   body: item
  }
@@ -97,7 +98,7 @@ export const  postRequestOptionsWithFormData = async <T>(token:any,
 
   export const deleteData = async <T>(addedUrl:string, tokenId:any = ''):Promise<T> => {
     const token:any = await storageType.get(tokenId);
-    const requestOptions:any = deleteRequestOptions(token.value);
+    const requestOptions:any = deleteRequestOptions(token);
 
     return fetch(
       baseUrl + '/' + addedUrl,
@@ -111,7 +112,7 @@ export const  postRequestOptionsWithFormData = async <T>(token:any,
     const token:any = await storageType.get(tokenId);
 
     const requestOptions:any = postRequestOptionsWithFormData(
-      token.value,
+      token,
       item,
       postType,
     );

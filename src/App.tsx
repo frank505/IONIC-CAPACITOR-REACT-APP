@@ -21,8 +21,16 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import Tabs from './pages/tabs';
+
 
  
+const getToken = async(key:any) => 
+ {
+    // const { value } = await Storage.get({ key: key });
+    const value = localStorage.getItem(key);
+  return value;
+}
 
 
 
@@ -35,7 +43,9 @@ const App: React.FC  = () => (
         <Route exact path="/">
           <Redirect to="/login" />
         </Route>
-      
+        <Route  path="/user" component={(props:any)=> localStorage.getItem('user_login')?
+        <Tabs {...props} /> :    <Redirect to="/login" /> 
+      } />
       </IonRouterOutlet>
     </IonReactRouter>
   </IonApp>

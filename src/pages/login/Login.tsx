@@ -7,6 +7,11 @@ import './login.css';
 import ContainerPropsInterface from '../../interfaces/ContainerPropsInterface'
 import { RouteComponentProps,withRouter } from 'react-router-dom';
 import { EmailCheckRegex,PasswordCheckRegex,noErrorsCheck } from '../../Utility/HelperFunc';
+import { LoginService } from '../../services/Auth/AuthService';
+import { Plugins } from '@capacitor/core';
+
+const { Storage } = Plugins;
+
 
 
 
@@ -20,6 +25,10 @@ const Login: React.FC<RouteComponentProps> = ({history}) => {
       const [showAlert, setShowAlert] = useState(false);
 
     const [formValidatorProps,setFormValidatorProps] = useState<any>('');
+
+    const [errMessage,setErrMessage] = useState('');
+
+    const [authSubHeader, setAuthSubHeader] = useState('');
 
     const goToRegisterPage = ():any =>
     {
@@ -44,11 +53,46 @@ const Login: React.FC<RouteComponentProps> = ({history}) => {
     let err = validation();
       if(noErrorsCheck(err)==false)
       {
+        setAuthSubHeader('Authentication Error');
+        setErrMessage('one or more fields were not entered properly.');
        return setShowAlert(true);
       }
 
       console.log(fields);
-     
+      
+      
+
+      LoginService(fields).then((data:any)=>{
+        console.log(data);
+    if(data.hasOwnProperty('error') && data.success==false)
+    {
+      Object.keys(data.error).map((keys, index) => 
+      {
+        if(typeof data.error == 'string')
+        {
+          setAuthSubHeader('Authentication Error');
+          setErrMessage(data.error);
+          setShowAlert(true);
+
+        }else{
+          setAuthSubHeader('Authentication Error');
+          setErrMessage(data.error[keys][0]);
+          setShowAlert(true);
+          
+        }
+       
+      });
+    }else if(data.hasOwnProperty('success') && data.success==true)
+    {
+        //  Storage.set({
+        //     key: 'user_login',
+        //     value: data.token
+        //   });
+        localStorage.setItem('user_login',data.token);
+          history.push('/user');
+    }
+      });
+
   }
    
 
@@ -101,8 +145,8 @@ const Login: React.FC<RouteComponentProps> = ({history}) => {
           onDidDismiss={() => setShowAlert(false)}
           cssClass='my-custom-class'
           header={'Alert'}
-          subHeader={'Authentication Error'}
-          message={'One or more fields have not been entered correctly'}
+          subHeader={authSubHeader}
+          message={errMessage}
           buttons={['OK']}
         />
 

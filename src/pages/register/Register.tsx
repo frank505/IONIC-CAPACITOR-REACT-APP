@@ -75,7 +75,7 @@ let err = validation();
           setShowAlert(true);
 
         }else{
-          setAuthSubHeader('Authentication Success');
+          setAuthSubHeader('Authentication Error');
           setErrMessage(data.error[keys][0]);
           setShowAlert(true);
           
