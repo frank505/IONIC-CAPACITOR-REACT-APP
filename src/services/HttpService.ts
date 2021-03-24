@@ -12,7 +12,7 @@ export const getData =  async <T>(addedUrl:string, tokenId :string=''):Promise<T
     const token:any = await storageType.get(tokenId);
     let requestOptions:any = getRequestOptions(token);
     return fetch(
-      baseUrl + '' + addedUrl,
+      baseUrl + '/' + addedUrl,
       requestOptions,
     ).then((response) => response.json());
 } 

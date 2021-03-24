@@ -89,7 +89,7 @@ const Login: React.FC<RouteComponentProps> = ({history}) => {
         //     value: data.token
         //   });
         localStorage.setItem('user_login',data.token);
-          history.push('/user');
+          history.push('/user/view-contacts');
     }
       });
 
