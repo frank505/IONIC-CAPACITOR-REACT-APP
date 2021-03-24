@@ -1,18 +1,23 @@
-export const baseUrl:string = "http://localhost:8000/api";
+import { Plugins } from '@capacitor/core';
 
-const storageType:any = localStorage;
+const { Storage } = Plugins;
+
+
+export const baseUrl:string = "http://localhost:8001/api";
+
+const storageType:any = Storage;
 
 export const getData =  async <T>(addedUrl:string, tokenId :string=''):Promise<T> => 
 {
-    const token:any = await storageType.getItem(tokenId);
-    let requestOptions:any = getRequestOptions(token);
+    const token:any = await storageType.get(tokenId);
+    let requestOptions:any = getRequestOptions(token.value);
     return fetch(
       baseUrl + '' + addedUrl,
       requestOptions,
     ).then((response) => response.json());
 } 
 
-export const getRequestOptions = async <T>(token:string|null):Promise<T> =>
+export const getRequestOptions = async <T>(token:any):Promise<T> =>
 {
     let requestOptions:any = {
       method: 'GET',
@@ -26,36 +31,41 @@ export const getRequestOptions = async <T>(token:string|null):Promise<T> =>
   };
 
   export const postData = async <T>(item:any, addedUrl:string, 
-    postType:string, tokenId:string = ''):Promise<T> =>
+    postType:any, tokenId:string = ''):Promise<T> =>
      {
-    const token = await storageType.getItem(tokenId);
+    
+        const token:any = await storageType.get(tokenId);
 
-    const requestOptions:any = postRequestOptions(token, item, postType);
+        const requestOptions:any = postRequestOptions(
+          token.value,
+           item,
+          postType,
+        );
+      
+        console.log(requestOptions);
 
-    console.log(baseUrl + '/' + addedUrl);
-
-    return fetch(
-      baseUrl + '/' + addedUrl,
-      requestOptions,
-    ).then((response) => response.json());
+        return fetch(
+         baseUrl + '/' + addedUrl,
+          requestOptions,
+        ).then((response) => response.json());
   };
 
   
-  export const postRequestOptions = async <T>(token:string|null,item:any,postType:string):Promise<T> =>
+  export const postRequestOptions = (token:any,item:any,postType:any)=>
 {
-    let requestOptions:any = {
-      method: postType,
-      headers: {
-        Authorization: 'Bearer ' + token,
-        'Content-type': 'application/json',
-      },
-    };
-
+     let requestOptions:any = {
+  method: postType,
+  headers: {
+    Authorization: 'Bearer '+token ,
+    'Content-type': 'application/json',
+  },
+  body: item
+ }
     return requestOptions;
   };
 
 
-export const  postRequestOptionsWithFormData = async <T>(token:string|null,
+export const  postRequestOptionsWithFormData = async <T>(token:any,
      item:any, postType:string):Promise<T> => {
     let requestOptions:any = {
       method: postType,
@@ -71,7 +81,7 @@ export const  postRequestOptionsWithFormData = async <T>(token:string|null,
     return requestOptions;
   };
 
-  export const deleteRequestOptions = async <T>(token:string|null):Promise<T> => 
+  export const deleteRequestOptions = async <T>(token:any):Promise<T> => 
   {
     let requestOptions:any = {
       method: 'DELETE',
@@ -86,8 +96,8 @@ export const  postRequestOptionsWithFormData = async <T>(token:string|null,
 
 
   export const deleteData = async <T>(addedUrl:string, tokenId:any = ''):Promise<T> => {
-    const token = await storageType.getItem(tokenId);
-    const requestOptions:any = deleteRequestOptions(token);
+    const token:any = await storageType.get(tokenId);
+    const requestOptions:any = deleteRequestOptions(token.value);
 
     return fetch(
       baseUrl + '/' + addedUrl,
@@ -98,15 +108,15 @@ export const  postRequestOptionsWithFormData = async <T>(token:string|null,
 
   export const postDataWithFormData = async <T>(item:any, addedUrl:string, 
     postType:string, tokenId:string = ''):Promise<T> => {
-    const token = await storageType.getItem(tokenId);
+    const token:any = await storageType.get(tokenId);
 
     const requestOptions:any = postRequestOptionsWithFormData(
-      token,
+      token.value,
       item,
       postType,
     );
 
-    console.log(baseUrl+ '/' + addedUrl);
+    
 
     return fetch(
      baseUrl + '/' + addedUrl,

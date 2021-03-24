@@ -7,6 +7,8 @@ import './register.css';
 import ContainerPropsInterface from '../../interfaces/ContainerPropsInterface'
 import { RouteComponentProps,withRouter } from 'react-router-dom';
 import { EmailCheckRegex,PasswordCheckRegex,noErrorsCheck } from '../../Utility/HelperFunc';
+import { RegisterService } from '../../services/Auth/AuthService';
+import { baseUrl } from '../../services/HttpService';
 
 
 
@@ -20,6 +22,10 @@ const Register: React.FC<RouteComponentProps> = ({history}) =>
     lastname:''
   });
   const [showAlert, setShowAlert] = useState(false);
+
+   const [errMessage,setErrMessage] = useState('');
+
+   const [authSubHeader, setAuthSubHeader] = useState('');
 
 const [formValidatorProps,setFormValidatorProps] = useState<any>('');
 
@@ -48,11 +54,43 @@ const registerUser = ():any =>
 let err = validation();
   if(noErrorsCheck(err)==false)
   {
+    setAuthSubHeader('Authentication Error');
+    setErrMessage('one or more fields were not entered properly.');
    return setShowAlert(true);
   }
 
   console.log(fields);
- 
+  
+  RegisterService(JSON.stringify(fields)).then((data:any)=>
+  {
+    console.log(data);
+    if(data.hasOwnProperty('error') && data.success==false)
+    {
+      Object.keys(data.error).map((keys, index) => 
+      {
+        if(typeof data.error == 'string')
+        {
+          setAuthSubHeader('Authentication Error');
+          setErrMessage(data.error);
+          setShowAlert(true);
+
+        }else{
+          setAuthSubHeader('Authentication Success');
+          setErrMessage(data.error[keys][0]);
+          setShowAlert(true);
+          
+        }
+       
+      });
+    }else if(data.hasOwnProperty('success') && data.success==true)
+    {
+      setErrMessage(data.message);
+      setShowAlert(true);
+    }
+  });
+
+
+
 }
 
 return (
@@ -118,7 +156,7 @@ return (
              <IonButton  color="primary" expand="full" style={{marginTop:'20px'}}
              onClick={registerUser}
              >
-               Login
+               Register
              </IonButton> 
       
         <IonLabel className="link-text" onClick={goToLoginPage}>
@@ -130,8 +168,8 @@ return (
           onDidDismiss={() => setShowAlert(false)}
           cssClass='my-custom-class'
           header={'Alert'}
-          subHeader={'Authentication Error'}
-          message={'One or more fields have not been entered correctly'}
+          subHeader={authSubHeader}
+          message={errMessage}
           buttons={['OK']}
         />   
    
